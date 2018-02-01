@@ -54,6 +54,6 @@ To Do:
  * scripts for command-line access
  * vectorize distance/DM too?
  * add YMW16 model
- 
+ * access scattering quantities
 
 
