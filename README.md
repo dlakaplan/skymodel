@@ -1,34 +1,59 @@
-# pulsar_gsm
-pulsar-specific interface to the global sky model for computing sky temperatures
+# SkyModel
+generic/pulsar-specific interface to the sky model for computing:
+ * sky temperatures (Global Sky Model)
+ * dispersion measure (from distance)
+ * distance (from dispersion measure)
 
 Requires:
  * astropy
  * global sky model python interface [pygsm](https://github.com/telegraphic/PyGSM)
+ * numpy/f2py
+Optional (to work with .par files):
  * pulsar timing interface [PINT](https://github.com/nanograv/PINT)
  
 Usage:
 ```python
-import pulsar_Tsky
-from astropy import units as u
-Tsky=pulsar_Tsky.pulsar_Tsky(<parfile>, freq=1400*u.MHz, model='2008')
+from astropy.coordinates import SkyCoord
+from astropy import units as u, constants as c
+from skymodel import skymodel
+
+source = SkyCoord("05h35m17.3s -05d23m28s", frame='icrs')
+
+d=skymodel.SkyModel()
+print d.distance(source, 10)
+print d.DM(source, 659*u.pc)
+print d.Tsky(source)
+
+print d.distance('0038-2501.par', 10)
+print d.DM('0038-2501.par', 449*u.pc)
+print d.Tsky('0038-2501.par')
+
+ra=np.linspace(0,240,15).reshape((5,3))
+dec=np.linspace(-30,30,15).reshape((5,3))
+
+source=SkyCoord(ra,dec,unit='deg')
+print d.Tsky(source)
+print d.DM(source, 1*u.kpc)
+print d.distance(source, 10)
+
 ```
 
- * The frequency can be passed as a number (MHz assumed) or an astropy quantity.
- * The model can be '2008' or '2016'
+ * When model is initialized the frequency (for Tsky) can be passed as a number (MHz assumed) or an astropy quantity.
+ * The Tsky model can be 'GSM2008' or 'GSM2016'
  * parfiles are parsed by PINT
- 
-Or on the command line:
+ * Currently only NE2001 is supported for DM models
+ * Source positions can be vectorized
+ * There are convenience functions as well:
+ ```python
+ print skymodel.Tsky(source)
+ print skymodel.DM(source, 10*u.pc)
+ print skymodel.distance(source, 10)
 ```
-plock[gbncc]% python ./pulsar_Tsky.py -f 350 FYRE/0038-2501.par
-WARNING: Unrecognized parfile line 'EPHVER         5' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'T2CMETHOD      IAU2000B' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'NE_SW          4.000' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'CHI2R          0.0000 215' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'EPHVER         5' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'T2CMETHOD      IAU2000B' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'NE_SW          4.000' [pint.models.timing_model]
-WARNING: Unrecognized parfile line 'CHI2R          0.0000 215' [pint.models.timing_model]
-PSR J0038-25: 27.1 K (at 350 MHz)
-```
+
+To Do:
+ * scripts for command-line access
+ * vectorize distance/DM too?
+ * add YMW16 model
  
+
 
