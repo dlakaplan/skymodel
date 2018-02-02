@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 from astropy.coordinates import SkyCoord
 from astropy import units as u, constants as c
 import os,sys
@@ -72,10 +73,11 @@ def main():
     s='For source (RA,Dec)=%s' % (source.to_string('hmsdms'))
     if options.parfile is not None:
         s+=' [%s]' % options.parfile
-    print s
-    print '(l,b)=%s' % source.galactic.to_string('decimal')
-    print 'and freq=%s' % f
-    print m.Tsky(source)
+    print(s)
+    print('(l,b)=%s' % source.galactic.to_string('decimal'))
+    print('and freq=%s' % f)
+    print(m.Tsky(source))
+    
         
 
  
