@@ -18,9 +18,9 @@ try:
 except ImportError:
     _usePyGSM=False
     
-import ne2001
+from . import ne2001
 
-import data
+from . import data
 
 def parfile2SkyCoord(parfile):
     """
@@ -30,7 +30,7 @@ def parfile2SkyCoord(parfile):
     """
     
     if not _usePINT:
-        raise ImportError,'PINT is not available: cannot use parfiles'
+        raise ImportError('PINT is not available: cannot use parfiles')
     m=models.get_model(parfile)
     return SkyCoord(m.get_psr_coords())
 
@@ -89,13 +89,13 @@ class SkyModel:
         """
 
         if not _usePyGSM:
-            raise 'PyGSM is not available: cannot access sky temperatures'
+            raise ImportError('PyGSM is not available: cannot access sky temperatures')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
                 # assume .par file
                 source=parfile2SkyCoord(source)
             else:
-                raise TypeError, 'Do not know how to interpret an object of type %s' % source.__class__
+                raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
 
         T=healpy.pixelfunc.get_interp_val(self.map,
                                           source.galactic.l.value,
@@ -129,14 +129,14 @@ class SkyModel:
             # assume kpc
             distance*=u.kpc            
         if distance <= 0:
-            raise ValueError,'distance must be > 0'
+            raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
                 # assume .par file
                 source=parfile2SkyCoord(source)
             else:
-                raise TypeError, 'Do not know how to interpret an object of type %s' % source.__class__
+                raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
         source=source.icrs
 
 
@@ -148,7 +148,7 @@ class SkyModel:
                                  0,
                                  distance.to(u.kpc).value)
             if results[2]=='>':
-                raise ValueError,'DM returned a lower limit'
+                raise ValueError('DM returned a lower limit')
             if smweight.lower() == 'uniform':
                 SM=results[3]*u.kpc/u.m**(20./3)
             elif smweight.lower() == 'tau':
@@ -171,7 +171,7 @@ class SkyModel:
                                      0,
                                      distance.to(u.kpc).value)
                 if results[2]=='>':
-                    raise ValueError,'DM returned a lower limit'
+                    raise ValueError('DM returned a lower limit')
                 dm[it.multi_index]=results[0]
                 if smweight.lower() == 'uniform':
                     SM[it.multi_index]=results[3]
@@ -209,13 +209,13 @@ class SkyModel:
             # assume DM unit
             DM*=u.pc/u.cm**3
         if DM <= 0:
-            raise ValueError, 'DM must be > 0'
+            raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
                 # assume .par file
                 source=parfile2SkyCoord(source)
             else:
-                raise TypeError, 'Do not know how to interpret an object of type %s' % source.__class__
+                raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
         source=source.icrs
 
         if len(source.ra.shape)==0:
@@ -227,7 +227,7 @@ class SkyModel:
                                  DM.to(u.pc/u.cm**3).value,
                                  0)
             if results[2]=='>':
-                raise ValueError,'distance returned a lower limit'
+                raise ValueError('distance returned a lower limit')
             distance=results[1]*u.kpc
             if smweight.lower() == 'uniform':
                 SM=results[3]*u.kpc/u.m**(20./3)
@@ -251,7 +251,7 @@ class SkyModel:
                                      dm,
                                      0)
                 if results[2]=='>':
-                    raise ValueError,'distance returned a lower limit'
+                    raise ValueError('distance returned a lower limit')
                 distance[it.multi_index]=results[1]
                 if smweight.lower() == 'uniform':
                     SM[it.multi_index]=results[3]
@@ -289,7 +289,7 @@ def Tsky(source, freq=350*u.MHz, model='2008'):
             # assume .par file
             source=parfile2SkyCoord(source)
         else:
-            raise TypeError, 'Do not know how to interpret an object of type %s' % source.__class__
+            raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
 
 
     m=SkyModel(freq=freq, tskymodel=model)

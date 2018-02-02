@@ -8,7 +8,7 @@ from numpy.distutils.core import setup, Extension
 # check for required modules
 try:
     import astropy
-except ImportError,e:
+except ImportError as e:
     print("ERROR! You are missing a dependency!")
     print(e)
     raise
