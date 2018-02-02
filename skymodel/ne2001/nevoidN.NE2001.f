@@ -76,17 +76,17 @@ c                 1 => uniform and truncated at 1/e
 
 c first time through, calculate xc, yc, zc
 
-	if(first) then 		!read void parameters
+	if(first) then                                  !read void parameters
 	  j=1
 c	  write(6,*) 'reading nevoidN.dat.clean'
 	  open(luvoid, file=trim(datadir) // '/nevoidN.NE2001.dat',
-     .	       status='old')
-	  read(luvoid,*)				! label line
+     .       status='old')
+	  read(luvoid,*)                                ! label line
     5     read(luvoid,*,end=99) voidflag, 
-     .      lv(j),bv(j),dv(j),				! deg, deg, kpc
-     .      nev(j),Fv(j),				! cm^{-3}, dimensionless
-     .      aav(j),bbv(j),ccv(j),thvy(j), thvz(j),  	! kpc,kpc,kpc,deg,deg
-     .      edge(j)					! 0 or 1
+     .      lv(j),bv(j),dv(j),                          ! deg, deg, kpc
+     .      nev(j),Fv(j),                               ! cm^{-3}, dimensionless
+     .      aav(j),bbv(j),ccv(j),thvy(j), thvz(j),      ! kpc,kpc,kpc,deg,deg
+     .      edge(j)                                     ! 0 or 1
           if(voidflag .eq. 0) then
 	    slc = sin(lv(j)/radian)
 	    clc = cos(lv(j)/radian)

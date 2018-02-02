@@ -19,7 +19,7 @@ c are based largely on work by Toscano et al. 1999
 c and Bhat et al. 1999
 
 	real function ne_LISM(datadir, x,y,z,FLISM,wLISM,
-     .                       wldr, wlhb,wlsb,wloopI)		
+     .                        wldr, wlhb,wlsb,wloopI)		
 	implicit none
 	character(len=255) :: datadir
 	real x,y,z,FLISM
@@ -50,10 +50,10 @@ c functions:
 c other variables:
 
 	real nelsbxyz, nelhbxyz, neldrq1xyz, neloopIxyz 
-	real FLDRQ1r, FLSBr, FLHBr, FLOOPIr		! 'r' for returned value
+	real FLDRQ1r, FLSBr, FLHBr, FLOOPIr             ! 'r' for returned value
 	integer wLDR, wLSB, wLHB, wLOOPI
 
-	if(first) then					! read parameters for LISM
+	if(first) then                                  ! read parameters for LISM
 	   open(11,file=trim(datadir) // '/nelism.inp',status='unknown')
 	  read(11,*)
 	  read(11,*) aldr,bldr,cldr
@@ -79,10 +79,10 @@ c other variables:
 	  first=.false.
 	endif
 
-	neldrq1xyz = neLDRQ1(x,y,z,FLDRQ1r,wLDR)	! low density region in Q1
-	nelsbxyz   = neLSB(x,y,z,FLSBr,wLSB)		! Local Super Bubble
-	nelhbxyz = neLHB2(x,y,z,FLHBr,wLHB)		! Local Hot Bubble
-	neloopIxyz = neLOOPI(x,y,z,FLOOPIr,wLOOPI)	! Loop I
+	neldrq1xyz = neLDRQ1(x,y,z,FLDRQ1r,wLDR)        ! low density region in Q1
+	nelsbxyz   = neLSB(x,y,z,FLSBr,wLSB)            ! Local Super Bubble
+	nelhbxyz = neLHB2(x,y,z,FLHBr,wLHB)             ! Local Hot Bubble
+	neloopIxyz = neLOOPI(x,y,z,FLOOPIr,wLOOPI)      ! Loop I
 
 
 c weight the terms so that the LHB term overrides the other 
@@ -121,7 +121,7 @@ c    .      flsb, fldrq1, flhb
 	return
 	end
 
-	real function  neLDRQ1(x,y,z,FLDRQ1r,wLDRQ1) 	! Low Density Region in Q1
+	real function  neLDRQ1(x,y,z,FLDRQ1r,wLDRQ1)      ! Low Density Region in Q1
 	implicit none
 	real x,y,z,FLDRQ1r
 	integer wLDRQ1
@@ -151,13 +151,13 @@ c            ne = (1-wLDRQ1)*ne_other + neLDRQ1
      .    xlpI,ylpI,zlpI,rlpI,drlpI,nelpI,FlpI,dnelpI,dFlpI
          
 
-	real aa,bb,cc			! scales of ellipsoidal ridge
-	real netrough			! ne of annulus, trough
-	real Ftrough			! fluctuation parameters
+	real aa,bb,cc                   ! scales of ellipsoidal ridge
+	real netrough                   ! ne of annulus, trough
+	real Ftrough                    ! fluctuation parameters
 c	real xldr, yldr, zldr		! center of ellipsoid
-	real theta 			! position angle of major axis,
-					!    measured from x axis 
-					!    (x axis points toward l=90)
+	real theta                      ! position angle of major axis,
+                                        !    measured from x axis 
+                                        !    (x axis points toward l=90)
 	
 	real q
 
@@ -203,7 +203,7 @@ c	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp
      .    + (y-yldr)**2*bp 
      .    + (z-zldr)**2*cp
      .    + (x-xldr)*(y-yldr)*dp
-	  if(q .le. 1.0) then	! inside 
+	  if(q .le. 1.0) then     ! inside 
 	    neLDRQ1 = netrough 
 	    FLDRQ1r = Ftrough 
 	    wLDRQ1 = 1
@@ -213,7 +213,7 @@ c	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp
 	end
 	
 
-	real function neLSB(x,y,z,FLSBr,wLSB)	! Local Super Bubble
+	real function neLSB(x,y,z,FLSBr,wLSB)    ! Local Super Bubble
 	implicit none
 	real x,y,z,FLSBr
 	integer wLSB
@@ -243,13 +243,13 @@ c            ne = (1-wLSB)*ne_other + neLSB
      .    xlpI,ylpI,zlpI,rlpI,drlpI,nelpI,FlpI,dnelpI,dFlpI
          
 
-	real aa,bb,cc			! scales of ellipsoidal ridge
-	real netrough			! ne of annulus, trough
-	real Ftrough			! fluctuation parameters
+	real aa,bb,cc                   ! scales of ellipsoidal ridge
+	real netrough                   ! ne of annulus, trough
+	real Ftrough                    ! fluctuation parameters
 c	real xlsb, ylsb, zlsb		! center of ellipsoid
-	real theta 			! position angle of major axis,
-					!    measured from x axis 
-					!    (x axis points toward l=90)
+	real theta                      ! position angle of major axis,
+                                        !    measured from x axis 
+                                        !    (x axis points toward l=90)
 	
 	real q
 
@@ -295,7 +295,7 @@ c	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp
      .    + (y-ylsb)**2*bp 
      .    + (z-zlsb)**2*cp
      .    + (x-xlsb)*(y-ylsb)*dp
-	  if(q .le. 1.0) then	! inside 
+	  if(q .le. 1.0) then    ! inside 
 	    neLSB = netrough 
 	    FLSBr = Ftrough 
 	    wLSB = 1
@@ -304,7 +304,7 @@ c	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp
 	return
 	end
 
-	real function neLHB(x,y,z,FLHBr,wLHB)	! Local Hot Bubble
+	real function neLHB(x,y,z,FLHBr,wLHB)     ! Local Hot Bubble
 	implicit none
 	real x,y,z,FLHBr
 	integer wLHB
@@ -334,13 +334,13 @@ c            ne = (1-wLHB)*ne_other + neLHB
      .    xlpI,ylpI,zlpI,rlpI,drlpI,nelpI,FlpI,dnelpI,dFlpI
          
 
-	real aa,bb,cc			! scales of ellipsoidal ridge
-	real netrough			! ne of annulus, trough
-	real Ftrough			! fluctuation parameters
+	real aa,bb,cc                   ! scales of ellipsoidal ridge
+	real netrough                   ! ne of annulus, trough
+	real Ftrough                    ! fluctuation parameters
 c	real xlhb, ylhb, zlhb		! center of ellipsoid
-	real theta 			! position angle of major axis,
-					!    measured from x axis 
-					!    (x axis points toward l=90)
+	real theta                      ! position angle of major axis,
+                                        !    measured from x axis 
+                                        !    (x axis points toward l=90)
 	real q
 
 	real ap, bp, cp, dp
@@ -387,7 +387,7 @@ c	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp
      .    + (y-ylhb)**2*bp 
      .    + (z-zlhb)**2*cp
      .    + (x-xlhb)*(y-ylhb)*dp
-	  if(q .le. 1.0) then	! inside 
+	  if(q .le. 1.0) then    ! inside 
 	    neLHB = netrough 
 	    FLHBr = Ftrough 
 	    wLHB = 1
@@ -398,7 +398,7 @@ c	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp
 	
 	
 
-	real function neLHB2(x,y,z,FLHBr,wLHB)	! Local Hot Bubble
+	real function neLHB2(x,y,z,FLHBr,wLHB) ! Local Hot Bubble
 c LHB modeled as a cylinder
 c the cylinder slants in the y direction vs. z as described by parameter yzslope
 c the cylinder cross-sectional size in the 'a' direction (major axis)
@@ -432,12 +432,12 @@ c            ne = (1-wLHB)*ne_other + neLHB2
      .    xlpI,ylpI,zlpI,rlpI,drlpI,nelpI,FlpI,dnelpI,dFlpI
          
 
-	real aa,bb,cc			! scales of ellipsoidal ridge
-	real netrough			! ne of annulus, trough
-	real Ftrough			! fluctuation parameters
+	real aa,bb,cc                    ! scales of ellipsoidal ridge
+	real netrough                    ! ne of annulus, trough
+	real Ftrough                     ! fluctuation parameters
 c	real xlhb, ylhb, zlhb		! center of ellipsoid
-	real theta 			! slant angle in yz plane of cylinder
-					!    measured from z axis 
+	real theta                       ! slant angle in yz plane of cylinder
+                                         !    measured from z axis 
 	real qxy, qz
 
         real radian
@@ -479,7 +479,7 @@ c (0.001 = 1 pc is to avoid divide by zero)
 c	write(99, *) x, y, z, aa, bb, cc
 	qxy =  ( (x-xlhb)/aa )**2 + ( (y-yaxis)/bb )**2 
 	qz =  abs(z-zlhb)/cc
-	if(qxy .le. 1.0 .and. qz .le. 1.0) then ! inside 
+	if(qxy .le. 1.0 .and. qz .le. 1.0) then  ! inside 
 	    neLHB2 = netrough 
 	    FLHBr = Ftrough 
 	    wLHB = 1
@@ -488,7 +488,7 @@ c	write(99, *) x, y, z, aa, bb, cc
 	return
 	end
 	
-	real function neLOOPI(x,y,z,FLOOPI,wLOOPI)	! Loop I
+	real function neLOOPI(x,y,z,FLOOPI,wLOOPI)     ! Loop I
 c component is a spheroid truncated for z<0.
 	implicit none
 	real x,y,z,FLOOPI
@@ -536,20 +536,20 @@ c		       <  1  outside the annular ridge
           return
         endif
 	r = sqrt( (x-xlpI)**2 + (y-ylpI)**2 + (z-zlpI)**2) 
-        if(r .gt. a2) then 	! outside Loop I
+        if(r .gt. a2) then      ! outside Loop I
 	  neLOOPI = 0.
 	  FLOOPI = 0.
 	  wLOOPI = 0
-	else if(r .le. a1) then	! inside volume
+	else if(r .le. a1) then ! inside volume
 	    neLOOPI= nelpI
 	    FLOOPI = FlpI
 	    wLOOPI = 1
 c           write(99,*) x,y,z, r, neLOOPI, ' inside volume'
-	else			! inside boundary shell
+	else                    ! inside boundary shell
 	    neLOOPI= dnelpI
 	    FLOOPI = dFlpI
 	    wLOOPI = 1
-c           write(99,*) x,y,z,r, neLOOPI, ' inside shell'
+c       write(99,*) x,y,z,r, neLOOPI, ' inside shell'
 	endif	  
 
 	return

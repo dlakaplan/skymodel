@@ -32,10 +32,10 @@ c
       implicit none
       real d, sm, nu
       real c1
-      parameter(c1=1.16)		! for uniform, Kolmogorov medium
+      parameter(c1=1.16)                       ! for uniform, Kolmogorov medium
       real tauiss
-      tauiss = 1000. * (sm / 292.)**1.2 * d * nu**(-4.4)	! ms
-      scintbw = c1 / (2. * 3.14159 * tauiss)			! kHz
+      tauiss = 1000. * (sm / 292.)**1.2 * d * nu**(-4.4)        ! ms
+      scintbw = c1 / (2. * 3.14159 * tauiss)                    ! kHz
       end
  
       REAL FUNCTION SCINTIME(sm, nu, vperp)
@@ -82,7 +82,7 @@ c nb: the coeff. in the following line is 0.14 Hz  from Cordes & Lazio (1991)
 c it is changed to 0.097 to conform with FUNCTION SCINTIME and
 c a new calculation consistent with Cordes & Rickett (1998)
 
-      specbroad = 0.097 * nu**(-1.2) * sm**0.6 * (vperp/100.)	! Hz
+      specbroad = 0.097 * nu**(-1.2) * sm**0.6 * (vperp/100.)     ! Hz
       end
  
  
@@ -132,7 +132,7 @@ c ( an approximate form that assumes (q_0 / q_1)^{3-alpha} >> 1.
 c
 c Jim Cordes 18 Dec 1989
 c
-      data router /1./	! outer scale = 1 pc
+      data router /1./       ! outer scale = 1 pc
       data pc/3.086e+18/
       data alpha/3.6666667/
       data pi/3.14159/
@@ -175,14 +175,14 @@ c     real falpha
 c     parameter(falpha=88.3)
 
       theta_log_radian = 
-     .    13.287  				! 0.6*log10(30cm*r_e)
+     .    13.287                                ! 0.6*log10(30cm*r_e)
      .  + 1.2 * alog10(nu) 
-     .  - 1.1676				! 0.6*log10(f_alpha)    
+     .  - 1.1676                                ! 0.6*log10(f_alpha)    
      .  - 0.6 * alog10(smiso)
-     .  - 34.383				! 1.6 * alog10(kpc)
-     .  + 8.					! -(20/3)*log(100)
+     .  - 34.383                                ! 1.6 * alog10(kpc)
+     .  + 8.                                    ! -(20/3)*log(100)
       theta_log_microarcsec = 
-     .      theta_log_radian + 11.314425	! 11.314425=alog10(microarsec/rad)
+     .      theta_log_radian + 11.314425        ! 11.314425=alog10(microarsec/rad)
       theta_iso = 10.**theta_log_microarcsec
       return
       end
@@ -219,14 +219,14 @@ c     real falpha
 c     parameter(falpha=88.3)
 
       theta_log_radian = 
-     .    13.287  				! 0.6*log10(30cm*r_e)
+     .    13.287                                ! 0.6*log10(30cm*r_e)
      .  + 1.2 * alog10(nu) 
-     .  - 1.1676				! 0.6*log10(f_alpha)    
+     .  - 1.1676                                ! 0.6*log10(f_alpha)    
      .  - 0.6 * alog10(smiso)
-     .  - 34.383				! 1.6 * alog10(kpc)
-     .  + 8.					! -(20/3)*log(100)
+     .  - 34.383                                ! 1.6 * alog10(kpc)
+     .  + 8.                                    ! -(20/3)*log(100)
       theta_log_microarcsec = 
-     .      theta_log_radian + 11.314425	! 11.314425=alog10(microarsec/rad)
+     .      theta_log_radian + 11.314425        ! 11.314425=alog10(microarsec/rad)
       theta_iso_test = 10.**theta_log_microarcsec
 c     write(6,*) 'smiso, nu = ', smiso, nu
 c     write(6,*) 'theta_log_radian = ', theta_log_radian
@@ -260,9 +260,9 @@ c        D_{eff} = dintegrate * (sm - smtau/6 - smtau/3) / sm
 c
       real deff
       real xi
-      parameter(xi= 0.3989)   ! (2.*pi)^{-1/2} = fresnel scale definition factor
+      parameter(xi= 0.3989)    ! (2.*pi)^{-1/2} = fresnel scale definition factor
       real coefficient
-      parameter(coefficient=318.)	     ! GHz; see NE2001 paper
+      parameter(coefficient=318.)                   ! GHz; see NE2001 paper
       deff = (dintegrate*(sm - smtau/6. - smtheta/3.)) / sm 
       transition_frequency = 
      .     coefficient * xi**(10./17.) * sm**(6./17.) * deff**(5./17.) 

@@ -75,7 +75,7 @@ c subroutines needed:
 c	neclumpN
 c	nevoidN
 
-	if(first) then			! get parameters first time through
+	if(first) then    ! get parameters first time through
 	   call get_parameters(datadir)
 	   first=.false.
 	endif
@@ -228,9 +228,9 @@ c see get_parameters for definitions of narm, warm, harm.
 
 	real aarm(narms), rmin(narms), thmin(narms), extent(narms)
 
-	integer armmap(5)		! for remapping from Wainscoat
-	data armmap/1, 3, 4, 2, 5/	! order to TC93 order, which is
-					! from GC outwards toward Sun.
+	integer armmap(5)               ! for remapping from Wainscoat
+	data armmap/1, 3, 4, 2, 5/      ! order to TC93 order, which is
+                                        ! from GC outwards toward Sun.
  	integer NNj(narms)
 	data NNj/20, 20, 20, 20, 20/
 
@@ -265,7 +265,7 @@ c function:
 	save
 
 	rr=sqrt(x**2 + y**2)
-	if(first) then			! Reconstruct spiral arm axes
+	if(first) then                    ! Reconstruct spiral arm axes
 
 c read arm parameters:
         open(11,file=trim(datadir)//'/ne_arms_log_mod.inp',status='old')
@@ -278,11 +278,11 @@ c         write(6,*) aarm(j), rmin(j), thmin(j), extent(j)
         enddo
         close(11)
 
-	do j=1,narms			! fill sampling array 
+	do j=1,narms                       ! fill sampling array 
 	  do n=1,NNj(j)
-	   th1(n,j) = thmin(j)+(n-1)*extent(j)/(NNj(j)-1.) 	! rad
+	   th1(n,j) = thmin(j)+(n-1)*extent(j)/(NNj(j)-1.)      ! rad
 	   r1(n,j) = rmin(j)*exp((th1(n,j)-thmin(j))/aarm(j))
-	   th1(n,j) = th1(n,j)*rad				! deg
+	   th1(n,j) = th1(n,j)*rad                              ! deg
 c *** begin sculpting spiral arm 2 == TC arm 3***
            if(armmap(j) .eq. 3) then
  	   if(th1(n,j) .gt. 370. .and. th1(n,j) .le. 410.) then
@@ -352,8 +352,8 @@ c of arms allows (TJL)
 	whicharm = 0
         whicharm_spiralmodel = 0
         sminmin = 1.e10
-	thxy = atan2(-x, y) * rad		! measured ccw from +y axis
-						! (different from tc93 theta)
+	thxy = atan2(-x, y) * rad               ! measured ccw from +y axis
+                                                ! (different from tc93 theta)
 	if(thxy.lt.0.) thxy=thxy+360.
 	if(abs(z/ha).lt.10.) then		
            do 50 j=1,narms
@@ -398,13 +398,13 @@ c of arms allows (TJL)
 	      smin=sqrt(sqmin)		! Distance of (x,y,z) from arm axis
 c           write(23,"(4(f5.2,1x),i2,1x,3(f8.3,1x))") 
 c    .        x,y,z,rr,j,exx,eyy,smin
-	    if(smin.lt.3*wa) then		! If (x,y,z) is close to this
-	      ga=exp(-(smin/(warm(jj)*wa))**2)	! arm, get the arm weighting factor 
+	    if(smin.lt.3*wa) then               ! If (x,y,z) is close to this
+	      ga=exp(-(smin/(warm(jj)*wa))**2)  ! arm, get the arm weighting factor 
 	      if(smin .lt. sminmin) then
 		whicharm_spiralmodel = j
 		sminmin = smin
 	      endif
-	      if(rr.gt.Aa) then 	! Galactocentric radial dependence of arms
+	      if(rr.gt.Aa) then                 ! Galactocentric radial dependence of arms
 		ga=ga*sech2((rr-Aa)/2.0) 
 c		write(6,*) 'd99a: rr,Aa,sech2() = ', 
 c                 rr, Aa, sech2((rr-Aa)/2.0) 
@@ -475,7 +475,7 @@ c		write(90,*) x, y, thxy, th2a, th2b, test2, fac
 	      endif
 	  
 	      nea=nea + 
-     .            narm(jj)*na*ga*sech2(z/(harm(jj)*ha))   ! Add this arm contribution
+     .            narm(jj)*na*ga*sech2(z/(harm(jj)*ha)) ! Add this arm contribution
 	    endif
 50	  continue
 	endif
@@ -485,7 +485,7 @@ c		write(90,*) x, y, thxy, th2a, th2b, test2, fac
 	if(whicharm_spiralmodel .eq. 0) then
 	  whicharm = 0
 	else
-	  whicharm = armmap(whicharm_spiralmodel)	! remap arm number
+	  whicharm = armmap(whicharm_spiralmodel)        ! remap arm number
 	  Farms = Fa * farm(whicharm)
 	endif
 	return
@@ -636,7 +636,7 @@ c     parameter (hgc=0.026)
 c GALACTOCENTRIC RADIUS
       
       rr = sqrt( (x-xgc)**2 + (y-ygc)**2)
-      if(rr .gt. rgc) return				! truncate at 1/e point 
+      if(rr .gt. rgc) return                            ! truncate at 1/e point 
 
 c Z-HEIGHT.
 
@@ -658,9 +658,10 @@ c
 c%%%%%%%%%%%%%%%%%%%%%%%%%  cspline.f  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 c
 	subroutine cspline(x,y,nn,xout,yout)
-	integer nnmax
+	integer nnmax,nn
 	parameter(nnmax=20)
 	real x(nnmax),y(nnmax),y2(nnmax),u(nnmax)
+        real xout,yout
 	save
 
 	if(nn .gt. nnmax) then
@@ -710,6 +711,7 @@ c
 
 	REAL FUNCTION SECH2(z)
 c-----------------------------------------------------------------------
+        real z
 	sech2=0.0
 	if(abs(z).lt.20.0) sech2=(2.0/(exp(z)+exp(-z)))**2
 	return
