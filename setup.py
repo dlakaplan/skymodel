@@ -44,7 +44,13 @@ setup(
     scripts=glob.glob('scripts/*.py'),
     ext_modules=[
     Extension(name='skymodel.ne2001',
-              sources=glob.glob('skymodel/ne2001/*NE2001.f') + ['skymodel/ne2001/scattering98.f'],
+              sources=['skymodel/ne2001/dmdsm.NE2001.f',
+                       'skymodel/ne2001/density.NE2001.f',
+                       'skymodel/ne2001/NE2001.f',
+                       'skymodel/ne2001/neclumpN.NE2001.f',
+                       'skymodel/ne2001/neLISM.NE2001.f',
+                       'skymodel/ne2001/nevoidN.NE2001.f',
+                       'skymodel/ne2001/scattering98.f'],                       
               f2py_options=['']
               )
     ],
