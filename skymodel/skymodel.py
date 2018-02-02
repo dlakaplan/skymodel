@@ -32,15 +32,8 @@ def parfile2SkyCoord(parfile):
     if not _usePINT:
         raise ImportError,'PINT is not available: cannot use parfiles'
     m=models.get_model(parfile)
-    try:
-        psr=SkyCoord(m.RAJ.quantity,m.DECJ.quantity)
-    except:
-        try:
-            psr=SkyCoord(m.ELONG.quantity,m.ELAT.quantity,frame='pulsarecliptic')
-        except:
-            raise KeyError,'Cannot find RAJ,DECJ or ELONG,ELAT in:\n%s' % m.as_parfile()
+    return SkyCoord(m.get_psr_coords())
 
-    return psr
 ##################################################
 class SkyModel:
     """
