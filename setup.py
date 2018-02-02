@@ -36,7 +36,7 @@ setup(
     #url = "http://mwa-lfd.haystack.mit.edu",
     packages=packages,
     #package_dir={'mwapy':'mwapy','':'configs'},
-    scripts=glob.glob('scripts/*'),
+    scripts=glob.glob('scripts/*.py'),
     ext_modules=[
     Extension(name='skymodel.ne2001',
               sources=glob.glob('skymodel/ne2001/*NE2001.f') + ['skymodel/ne2001/scattering98.f'],

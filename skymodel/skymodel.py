@@ -28,7 +28,10 @@ def parfile2SkyCoord(parfile):
         raise 'PINT is not available: cannot use parfiles'
     m=models.get_model(parfile)
     try:
-        psr=SkyCoord(m.RAJ.value,m.DECJ.value,unit='deg')
+        if m.RAJ.unitsuffix=='h':
+            psr=SkyCoord(m.RAJ.value,m.DECJ.value,unit=('hour','deg'))
+        else:
+            psr=SkyCoord(m.RAJ.value,m.DECJ.value,unit=('deg','deg'))            
     except:
         try:
             psr=SkyCoord(m.ELONG.value*u.deg,m.ELAT.value*u.deg,frame='pulsarecliptic')
@@ -123,6 +126,7 @@ class SkyModel:
                 source=parfile2SkyCoord(source)
             else:
                 raise TypeError, 'Do not know how to interpret an object of type %s' % source.__class__
+        source=source.icrs
 
 
         if len(source.ra.shape)==0:
@@ -169,7 +173,7 @@ class SkyModel:
                 source=parfile2SkyCoord(source)
             else:
                 raise TypeError, 'Do not know how to interpret an object of type %s' % source.__class__
-
+        source=source.icrs
 
         if len(source.ra.shape)==0:
             
