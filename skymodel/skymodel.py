@@ -1,7 +1,6 @@
-from pygsm import GlobalSkyModel,GlobalSkyModel2016
 import numpy as np
 from astropy.coordinates import SkyCoord
-import healpy
+
 from astropy import units as u
 import astropy
 from optparse import OptionParser
@@ -12,10 +11,16 @@ try:
 except ImportError:
     _usePINT=False
 
+try:
+    from pygsm import GlobalSkyModel,GlobalSkyModel2016
+    import healpy
+    _usePyGSM=True
+except ImportError:
+    _usePyGSM=False
+    
 import ne2001
 
 import data
-
 
 def parfile2SkyCoord(parfile):
     """
@@ -25,7 +30,7 @@ def parfile2SkyCoord(parfile):
     """
     
     if not _usePINT:
-        raise 'PINT is not available: cannot use parfiles'
+        raise ImportError,'PINT is not available: cannot use parfiles'
     m=models.get_model(parfile)
     try:
         if m.RAJ.unitsuffix=='h':
@@ -73,13 +78,16 @@ class SkyModel:
             # assume MHz
             freq=freq*u.MHz
 
-        if str(tskymodel)=='2008':
-            self.gsm = GlobalSkyModel()
-        elif str(tskymodel)=='2016':
-            self.gsm=GlobalSkyModel2016()
-        self.map=self.gsm.generate(freq.to(u.MHz).value)
+        if _usePyGSM:
+            if str(tskymodel)=='2008':
+                self.gsm = GlobalSkyModel()
+            elif str(tskymodel)=='2016':
+                self.gsm=GlobalSkyModel2016()
+            self.map=self.gsm.generate(freq.to(u.MHz).value)
+            self.tskymodel=tskymodel
+        else:
+            self.tskymodel=None
         self.freq=freq
-        self.tskymodel=tskymodel
 
     ##################################################
     def Tsky(self, source):
@@ -89,7 +97,9 @@ class SkyModel:
         returns sky temperature in K for the given model
         given a source, either a SkyCoord object or a parfile
         """
-        
+
+        if not _usePyGSM:
+            raise 'PyGSM is not available: cannot access sky temperatures'
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
                 # assume .par file

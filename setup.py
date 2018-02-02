@@ -1,3 +1,4 @@
+from __future__ import print_function
 #from setuptools import setup, Extension
 import numpy, os, sys, os.path
 import glob
@@ -6,18 +7,22 @@ from numpy.distutils.core import setup, Extension
 
 # check for required modules
 try:
-    import pygsm
     import astropy
-    import healpy
 except ImportError,e:
-    print "ERROR! You are missing a dependency!"
-    print e
+    print("ERROR! You are missing a dependency!")
+    print(e)
     raise
 
 try:
     import pint
 except ImportError:
-    print 'You are missing PINT: certain functionality may not work'
+    print('You are missing PINT: certain functionality may not work')
+
+try:
+    import pygsm
+    import healpy
+except ImportError:
+    print('You are missing PyGSM: certain functionality may not work')
     
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
