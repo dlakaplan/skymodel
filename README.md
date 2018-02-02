@@ -50,8 +50,34 @@ print d.distance(source, 10)
  print skymodel.distance(source, 10)
 ```
 
+And there are command-line scripts:
+```
+plock[test]% bin/NE2001_distance.py --par=1949+3426.par 10
+For source (RA,Dec)=19h49m13.6713s +34d26m33.8648s [1949+3426.par]
+(l,b)=69.7201 4.28843
+and DM=10.000 pc/cm**3
+0.890833377838 kpc
+
+plock[test]% bin/NE2001_DM.py --par=1949+3426.par 10
+For source (RA,Dec)=19h49m13.6713s +34d26m33.8648s [1949+3426.par]
+(l,b)=69.7201 4.28843
+and d=10.0 kpc
+230.689941406 pc / cm3
+
+plock[test]% bin/NE2001_DM.py --par=1949+3426.par --unit=pc 10
+For source (RA,Dec)=19h49m13.6713s +34d26m33.8648s [1949+3426.par]
+(l,b)=69.7201 4.28843
+and d=10.0 pc
+0.0499999858439 pc / cm3
+
+plock[test]% bin/GSM2008_Tsky.py --par=1949+3426.par -f 350
+For source (RA,Dec)=19h49m13.6713s +34d26m33.8648s [1949+3426.par]
+(l,b)=69.7201 4.28843
+and freq=350.0 MHz
+76.676389301 K
+```
+
 To Do:
- * scripts for command-line access
  * vectorize distance/DM too?
  * add YMW16 model
  * access scattering quantities
