@@ -120,10 +120,10 @@ c       scattering routines in scattering98.f
 	real R0, rrmax, zmax, dmax
 	data R0/8.5/
 c	data rrmax/30.0/		! Max radius for reliable ne
-	data rrmax/50.0/		! Max radius for reliable ne
+	data rrmax/50.0/                ! Max radius for reliable ne
 c	data zmax/1.76/			! Max |z|
 c	data zmax/5.00/			! Max |z|
-	data zmax/25.00/		! Max |z|
+	data zmax/25.00/                ! Max |z|
         data dmax/50.0/                 ! maximum distance calculated
 
 	logical first
@@ -187,7 +187,7 @@ c       dstep = min(h1, h2) / 10.       ! step size in terms of scale heights
 	dstep=0.01
         if(ndir.lt.0) dtest=dist     
         if(ndir.ge.0) dtest=dmpsr/(n1h1/h1)   ! approximate test distance
-        nstep = dtest / dstep	        ! approximate number of steps
+        nstep = dtest / dstep           ! approximate number of steps
         if(nstep.lt.10) dstep=dtest/10  ! make # steps >= 10
 
 c  Sum until dm is reached (ndir >= 0) or dist is reached (ndir < 0). 
@@ -200,7 +200,7 @@ c  routine will work for n_e models with large n_e near the Sun.
         sm_sum1 = 0.                    ! sum of C_n^2
         sm_sum2 = 0.                    ! sum of C_n^2 * s
         sm_sum3 = 0.                    ! sum of C_n^2 * s^2
-	sm_sum4 = 0.			! sum of C_n^2 * s^{5./3.}
+	sm_sum4 = 0.                    ! sum of C_n^2 * s^{5./3.}
 
 	do i=1,narmsmax1
 	  armpaths(i) = 0.
@@ -238,12 +238,12 @@ c  routine will work for n_e models with large n_e near the Sun.
 	d=-0.5*dstep
 	do 10 i=1,99999
           ncount = ncount + 1
-	  d=d+dstep			! Distance from Sun in kpc
+	  d=d+dstep                     ! Distance from Sun in kpc
 	  r=d*cb
 	  x=r*sl
 	  y=R0-r*cl
 	  z=d*sb
-	  rr=sqrt(x**2 + y**2)		! Galactocentric radius
+	  rr=sqrt(x**2 + y**2)          ! Galactocentric radius
 	  if(ndir.ge.0.and.
      +      (d.gt.dmax.or.abs(z).gt.zmax.or.rr.gt.rrmax)) go to 20
                                                                        
@@ -267,14 +267,14 @@ c wlism = 1 causes the lism component to override smooth Galactic components
 c wvoid = 1 overrides everything except clumps               
 	  ne=
      .       (1.-wglism*wlism)*
-     .       (wg1*ne1 +					 
+     .       (wg1*ne1 +	
      .        wg2*ne2 +
      .        wga*nea +
      .        wggc*negc) +
      .        wglism*wlism*nelism 
-          ne = (1-wgvN*wvoid)*ne + wgvN*wvoid*nevN + wgcN*necN	
+          ne = (1-wgvN*wvoid)*ne + wgvN*wvoid*nevN + wgcN*necN 
 	  dmstep=dstep_pc*ne
-	  dm=dm+dmstep			! Add DM for this step
+	  dm=dm+dmstep                    ! Add DM for this step
 	  wtotal = (1-wgvN*wvoid)*(1-wglism*wlism)
 	  dm1 = dm1 + wtotal*wg1*ne1
 	  dm2 = dm2 + wtotal*wg2*ne2
@@ -364,8 +364,8 @@ c                         0   means interarm paths
 c       write(99,"(2(f8.3,1x), 7f10.6)") 
 c    .     d, dm, sm_term,  sm_sum1, sm_sum2, sm_sum3, 
 c    .     sm_sum1_last, sm_sum2_last, sm_sum3_last 
-	if(ndir.ge.0.and.dm.ge.dmpsr) go to 30	! Reached pulsar's DM?
-	if(ndir.lt.0.and.d.ge.dist) go to 40	! Reached pulsar's dist?
+	if(ndir.ge.0.and.dm.ge.dmpsr) go to 30  ! Reached pulsar's DM?
+	if(ndir.lt.0.and.d.ge.dist) go to 40    ! Reached pulsar's dist?
 	sm_sum1_last = sm_sum1
 	sm_sum2_last = sm_sum2
 	sm_sum3_last = sm_sum3
@@ -376,11 +376,11 @@ c     .     d,x,y,z,ne,sm_term,whicharm,hitclump,hitvoid
 10	continue
 	stop 'loop limit'
 
-20	limit='>'			! Only lower limit is possible
+20	limit='>'                       ! Only lower limit is possible
 	dist=d-0.5*dstep
 	go to 999
 
-30	dist=d+0.5*dstep - dstep*(dm-dmpsr)/dmstep  ! Interpolate last step
+30	dist=d+0.5*dstep - dstep*(dm-dmpsr)/dmstep   ! Interpolate last step
         
         if(ncount .lt. 10) then
 	  dstep  = dstep / 10.
@@ -415,11 +415,11 @@ c normalize the mean distances:
         dd = d+0.5*dstep-dist
 c subtract dd from armpath for latest arm (or iterarm) at end of LOS
 c       armpaths(whicharm) = armpaths(whicharm)-dd      ! < 16 Jan '03 	
-	armpaths(whicharm+1) = armpaths(whicharm+1)-dd 	! >,= 16 Jan '03
+	armpaths(whicharm+1) = armpaths(whicharm+1)-dd  ! >,= 16 Jan '03
 
 	do i=1,narmsmax1
 	  armdistances(i) = 
-     .        armdistances(i) / (max(1.0,armpaths(i)/dstep))	! mean distance of arm 
+     .        armdistances(i) / (max(1.0,armpaths(i)/dstep))   ! mean distance of arm 
 	enddo
 	dm1 = dm1 * dstep_pc      
 	dm2 = dm2 * dstep_pc      

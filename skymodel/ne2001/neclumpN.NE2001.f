@@ -73,12 +73,12 @@ c    rc = clump radius (kpc)
 c  edge = 0,1  0=> Gaussian, 1=> Gaussian w/ hard edge at e^{-1} 
 c  type = LOS type (P pulsar, G other Galactic, X extragalactic
 c losname = useful name
-	if(first) then 		!read clump parameters
+	if(first) then            !read clump parameters
 	  j=1
 c	  write(6,*) 'reading neclumpN.NE2001.dat'
 	  open(luclump,file=trim(datadir)//'/neclumpN.NE2001.dat',
      .           status='old')
-	  read(luclump,*)				! label line
+	  read(luclump,*)         ! label line
     5     read(luclump,*,end=99) clumpflag,lc(j),bc(j),nec(j),Fc(j),
      .           dc(j),rc(j),edge(j)
           if(clumpflag .eq. 0) then
