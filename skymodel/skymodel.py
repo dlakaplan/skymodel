@@ -33,13 +33,10 @@ def parfile2SkyCoord(parfile):
         raise ImportError,'PINT is not available: cannot use parfiles'
     m=models.get_model(parfile)
     try:
-        if m.RAJ.unitsuffix=='h':
-            psr=SkyCoord(m.RAJ.value,m.DECJ.value,unit=('hour','deg'))
-        else:
-            psr=SkyCoord(m.RAJ.value,m.DECJ.value,unit=('deg','deg'))            
+        psr=SkyCoord(m.RAJ.quantity,m.DECJ.quantity)
     except:
         try:
-            psr=SkyCoord(m.ELONG.value*u.deg,m.ELAT.value*u.deg,frame='pulsarecliptic')
+            psr=SkyCoord(m.ELONG.quantity,m.ELAT.quantity,frame='pulsarecliptic')
         except:
             raise KeyError,'Cannot find RAJ,DECJ or ELONG,ELAT in:\n%s' % m.as_parfile()
 
