@@ -6,8 +6,9 @@ generic/pulsar-specific interface to the sky model for computing:
 
 Requires:
  * astropy
- * global sky model python interface [pygsm](https://github.com/telegraphic/PyGSM)
+ * global sky model python interface [pygsm](https://github.com/telegraphic/PyGSM) (note: you might want to use this fork of [pygsm](https://github.com/dlakaplan/PyGSM) as it eliminates loading matplotlib when not needed)
  * numpy/f2py
+ 
 Optional (to work with .par files):
  * pulsar timing interface [PINT](https://github.com/nanograv/PINT)
  
