@@ -43,14 +43,14 @@ setup(
     #package_dir={'mwapy':'mwapy','':'configs'},
     scripts=glob.glob('scripts/*.py'),
     ext_modules=[
-    Extension(name='skymodel.ne2001',
-              sources=['skymodel/ne2001/dmdsm.NE2001.f',
-                       'skymodel/ne2001/density.NE2001.f',
-                       'skymodel/ne2001/NE2001.f',
-                       'skymodel/ne2001/neclumpN.NE2001.f',
-                       'skymodel/ne2001/neLISM.NE2001.f',
-                       'skymodel/ne2001/nevoidN.NE2001.f',
-                       'skymodel/ne2001/scattering98.f'],                       
+    Extension(name='skymodel.ne2001.ne2001',
+              sources=['skymodel/ne2001/src/dmdsm.NE2001.f',
+                       'skymodel/ne2001/src/density.NE2001.f',
+                       'skymodel/ne2001/src/NE2001.f',
+                       'skymodel/ne2001/src/neclumpN.NE2001.f',
+                       'skymodel/ne2001/src/neLISM.NE2001.f',
+                       'skymodel/ne2001/src/nevoidN.NE2001.f',
+                       'skymodel/ne2001/src/scattering98.f'],                       
               f2py_options=['']
               )
     ],
