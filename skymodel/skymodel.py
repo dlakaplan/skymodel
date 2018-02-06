@@ -170,8 +170,11 @@ class SkyModel:
                                  -1,
                                  0,
                                  distance.to(u.kpc).value)
+            sign=1
             if results[2]=='>':
-                raise ValueError('DM returned a lower limit')
+                #raise ValueError('DM returned a lower limit')
+                #results[0]*=-1
+                sign=-1
             if smweight.lower() == 'uniform':
                 SM=results[3]*u.kpc/u.m**(20./3)
             elif smweight.lower() == 'tau':
@@ -181,7 +184,7 @@ class SkyModel:
             elif smweight.lower() == 'iso':
                 SM=results[6]*u.kpc/u.m**(20./3)
 
-            return results[0]*u.pc/u.cm**3,SM
+            return sign*results[0]*u.pc/u.cm**3,SM
         else:
             dm=np.zeros_like(source.ra.value)
             SM=np.zeros_like(source.ra.value)
@@ -193,9 +196,12 @@ class SkyModel:
                                      -1,
                                      0,
                                      distance.to(u.kpc).value)
+                sign=1
                 if results[2]=='>':
-                    raise ValueError('DM returned a lower limit')
-                dm[it.multi_index]=results[0]
+                    #raise ValueError('DM returned a lower limit')
+                    #results[0]*=-1
+                    sign=-1
+                dm[it.multi_index]=results[0]*sign
                 if smweight.lower() == 'uniform':
                     SM[it.multi_index]=results[3]
                 elif smweight.lower() == 'tau':
@@ -307,9 +313,11 @@ class SkyModel:
                                  1,
                                  DM.to(u.pc/u.cm**3).value,
                                  0)
+            sign=1
             if results[2]=='>':
-                raise ValueError('distance returned a lower limit')
-            distance=results[1]*u.kpc
+                #raise ValueError('distance returned a lower limit')
+                sign=-1
+            distance=results[1]*u.kpc*sign
             if smweight.lower() == 'uniform':
                 SM=results[3]*u.kpc/u.m**(20./3)
             elif smweight.lower() == 'tau':
@@ -331,9 +339,11 @@ class SkyModel:
                                      1,
                                      dm,
                                      0)
+                sign=1
                 if results[2]=='>':
-                    raise ValueError('distance returned a lower limit')
-                distance[it.multi_index]=results[1]
+                    #raise ValueError('distance returned a lower limit')
+                    sign=-1
+                distance[it.multi_index]=results[1]*sign
                 if smweight.lower() == 'uniform':
                     SM[it.multi_index]=results[3]
                 elif smweight.lower() == 'tau':
