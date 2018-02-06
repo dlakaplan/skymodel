@@ -42,7 +42,7 @@ print d.distance(source, 10)
  * When model is initialized the frequency (for Tsky) can be passed as a number (MHz assumed) or an astropy quantity.
  * The Tsky model can be 'GSM2008' or 'GSM2016'
  * parfiles are parsed by PINT
- * [http://www.astro.cornell.edu/~cordes/NE2001/](NE2001) and [http://119.78.162.254/dmodel/index.php](YMW16)  supported for DM models
+ * [NE2001](http://www.astro.cornell.edu/~cordes/NE2001/) and [YMW16](http://119.78.162.254/dmodel/index.php)  supported for DM models
  * Source positions can be vectorized
  * There are convenience functions as well:
  ```python
