@@ -68,6 +68,11 @@ class SkyModel:
     m.distance(source, DM)
     m.Tsky(source)
     
+    tskymodel can be '2008' or '2016'
+    dmmodel can be 'NE2001' or 'YMW16'
+
+    if DM/d is a lower limit, returned value will be < 0 (NE2001-only)
+
     """
 
     def __init__(self, freq=350*u.MHz, tskymodel='2008', dmmodel='NE2001', datadir=data._datadir):
@@ -121,6 +126,23 @@ class SkyModel:
         return T*u.K
     ##############################
     def DM(self, source, distance, smweight='uniform'):
+        """
+        DM,SM=m.DM(source, distance, smweight='uniform')
+
+        returns DM in standard units and scattering measure (NE2001 only, else None) for the specified model
+        given a source, either a SkyCoord object or a parfile
+        and a distance
+
+        scattering measure can be weighted by:
+        'uniform': uniform weighting [default]
+        'tau': weighted for pulse broadening
+        'theta': weighted for angular broadening of galactic sources
+        'iso':  appropriate for calculating the isoplanatic angle at the source's location
+
+
+        if no units supplied kpc assumed for distance
+        """
+
         if self.dmmodel == 'ne2001':
             return self.DM_NE2001(source, distance, smweight=smweight)
         elif self.dmmodel == 'ymw16':
@@ -150,8 +172,8 @@ class SkyModel:
 
         if not isinstance(distance, astropy.units.quantity.Quantity):
             # assume kpc
-            distance*=u.kpc            
-        if distance <= 0:
+            distance=distance*u.kpc            
+        if distance.value.any() <= 0:
             raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
@@ -173,7 +195,6 @@ class SkyModel:
             sign=1
             if results[2]=='>':
                 #raise ValueError('DM returned a lower limit')
-                #results[0]*=-1
                 sign=-1
             if smweight.lower() == 'uniform':
                 SM=results[3]*u.kpc/u.m**(20./3)
@@ -189,17 +210,24 @@ class SkyModel:
             dm=np.zeros_like(source.ra.value)
             SM=np.zeros_like(source.ra.value)
             it = np.nditer(source.ra, flags=['multi_index'])
+            if len(dm.shape)==0:
+                dm_touse=dm
+            else:
+                dm_touse=dm[it.multi_index]
             while not it.finished:
+                if len(d.shape)==0:
+                    d_touse=d
+                else:
+                    d_touse=d[it.multi_index]
                 results=ne2001.dmdsm(self.datadir,
                                      np.radians(source[it.multi_index].galactic.l.value),
                                      np.radians(source[it.multi_index].galactic.b.value),
                                      -1,
                                      0,
-                                     distance.to(u.kpc).value)
+                                     d_touse)
                 sign=1
                 if results[2]=='>':
                     #raise ValueError('DM returned a lower limit')
-                    #results[0]*=-1
                     sign=-1
                 dm[it.multi_index]=results[0]*sign
                 if smweight.lower() == 'uniform':
@@ -228,8 +256,8 @@ class SkyModel:
 
         if not isinstance(distance, astropy.units.quantity.Quantity):
             # assume kpc
-            distance*=u.kpc            
-        if distance <= 0:
+            distance=distance*u.kpc            
+        if distance.value.any() <= 0:
             raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
@@ -252,10 +280,17 @@ class SkyModel:
         else:
             dm=np.zeros_like(source.ra.value)
             it = np.nditer(source.ra, flags=['multi_index'])
+            if not (len(distance.shape)==0 or distance.shape==source.ra.shape):
+                raise IndexError('Shape of distance must be scalar or the same as shape of coordinates')
+            d=distance.to(u.pc).value
             while not it.finished:
+                if len(d.shape)==0:
+                    d_touse=d
+                else:
+                    d_touse=d[it.multi_index]
                 results=ymw16.dmdtau_c(source[it.multi_index].galactic.l.value,
                                        source[it.multi_index].galactic.b.value,
-                                       distance.to(u.pc).value,
+                                       d_touse,
                                        2,
                                        self.datadir)
                     
@@ -266,6 +301,22 @@ class SkyModel:
             
     ##################################################
     def distance(self, source, DM, smweight='uniform'):
+        """
+        d,SM=m.distance(source, DM, smweight='uniform')
+
+        returns distance in kpc and scattering measure (NE2001 only, else None) for the specified model
+        given a source, either a SkyCoord object or a parfile
+        and a DM
+
+        scattering measure can be weighted by:
+        'uniform': uniform weighting [default]
+        'tau': weighted for pulse broadening
+        'theta': weighted for angular broadening of galactic sources
+        'iso':  appropriate for calculating the isoplanatic angle at the source's location
+
+        if no units supplied standard DM units assumed for DM
+        """
+        
         if self.dmmodel == 'ne2001':
             return self.distance_NE2001(source, DM, smweight=smweight)
         elif self.dmmodel == 'ymw16':
@@ -294,8 +345,8 @@ class SkyModel:
 
         if not isinstance(DM, astropy.units.quantity.Quantity):
             # assume DM unit
-            DM*=u.pc/u.cm**3
-        if DM <= 0:
+            DM=DM*u.pc/u.cm**3
+        if DM.value.any() <= 0:
             raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
@@ -332,12 +383,18 @@ class SkyModel:
             SM=np.zeros_like(source.ra.value)
             it = np.nditer(source.ra, flags=['multi_index'])
             dm=DM.to(u.pc/u.cm**3).value
+            if not (len(dm.shape)==0 or dm.shape==source.ra.shape):
+                raise IndexError('Shape of DM must be scalar or the same as shape of coordinates')
             while not it.finished:
+                if len(dm.shape)==0:
+                    dm_touse=dm
+                else:
+                    dm_touse=dm[it.multi_index]
                 results=ne2001.dmdsm(self.datadir,
                                      np.radians(source[it.multi_index].galactic.l.value),
                                      np.radians(source[it.multi_index].galactic.b.value),
                                      1,
-                                     dm,
+                                     dm_touse,
                                      0)
                 sign=1
                 if results[2]=='>':
@@ -368,8 +425,8 @@ class SkyModel:
 
         if not isinstance(DM, astropy.units.quantity.Quantity):
             # assume DM unit
-            DM*=u.pc/u.cm**3
-        if DM <= 0:
+            DM=DM*u.pc/u.cm**3
+        if DM.value.any() <= 0:
             raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
@@ -392,10 +449,16 @@ class SkyModel:
             distance=np.zeros_like(source.ra.value)
             it = np.nditer(source.ra, flags=['multi_index'])
             dm=DM.to(u.pc/u.cm**3).value
+            if not (len(dm.shape)==0 or dm.shape==source.ra.shape):
+                raise IndexError('Shape of DM must be scalar or the same as shape of coordinates')
             while not it.finished:
+                if len(dm.shape)==0:
+                    dm_touse=dm
+                else:
+                    dm_touse=dm[it.multi_index]
                 results=ymw16.dmdtau_c(source[it.multi_index].galactic.l.value,
                                        source[it.multi_index].galactic.b.value,                                   
-                                       dm,
+                                       dm_touse,
                                        1,
                                        self.datadir)
                 distance[it.multi_index]=results
