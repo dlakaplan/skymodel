@@ -19,6 +19,7 @@ except ImportError:
     _usePyGSM=False
     
 from . import ne2001
+from . import ymw16
 
 from . import data
 
@@ -33,6 +34,22 @@ def parfile2SkyCoord(parfile):
         raise ImportError('PINT is not available: cannot use parfiles')
     m=models.get_model(parfile)
     return SkyCoord(m.get_psr_coords())
+
+
+"""
+dmdtau_c usage:
+result=ymw16.dmdtau_c(l, b, dordm, ndir, dirname)
+
+l,b: Galactic coordinates in degrees
+dordm is input coordinate (distance in pc)
+ndir=1 for DM -> Distance
+ndir=2 for Distance -> DM
+dirname is location of data files
+
+returns dmord
+
+"""                      
+
 
 ##################################################
 class SkyModel:
@@ -63,7 +80,7 @@ class SkyModel:
 
 
         self.datadir=datadir
-        self.dmmodel=dmmodel
+        self.dmmodel=dmmodel.lower()
         if not isinstance(freq, astropy.units.quantity.Quantity):
             # assume MHz
             freq=freq*u.MHz
@@ -102,14 +119,20 @@ class SkyModel:
                                           source.galactic.b.value,
                                           lonlat=True)
         return T*u.K
+    ##############################
+    def DM(self, source, distance, smweight='uniform'):
+        if self.dmmodel == 'ne2001':
+            return self.DM_NE2001(source, distance, smweight=smweight)
+        elif self.dmmodel == 'ymw16':
+            return self.DM_YMW16(source, distance)
 
 
     ##############################
-    def DM(self, source, distance, smweight='uniform'):
+    def DM_NE2001(self, source, distance, smweight='uniform'):
         """
-        DM,SM=m.DM(source, distance, smweight='uniform')
+        DM,SM=m.DM_NE2001(source, distance, smweight='uniform')
 
-        returns DM in standard units and scattering measure for the given model
+        returns DM in standard units and scattering measure for NE2001
         given a source, either a SkyCoord object or a parfile
         and a distance
 
@@ -184,13 +207,71 @@ class SkyModel:
 
                 it.iternext()
             return dm*u.pc/u.cm**3,SM*u.kpc/u.m**(20./3)
+   ##############################
+    def DM_YMW16(self, source, distance):
+        """
+        DM,None=m.DM_YMW16(source, distance)
+
+        returns DM in standard units for YMW16
+        given a source, either a SkyCoord object or a parfile
+        and a distance
+
+        if no units supplied kpc assumed for distance
+        """
+
+
+        if not isinstance(distance, astropy.units.quantity.Quantity):
+            # assume kpc
+            distance*=u.kpc            
+        if distance <= 0:
+            raise ValueError('distance must be > 0')
+
+        if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
+            if isinstance(source,str):
+                # assume .par file
+                source=parfile2SkyCoord(source)
+            else:
+                raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
+        source=source.icrs
+
+
+        if len(source.ra.shape)==0:
+            results=ymw16.dmdtau_c(source.galactic.l.value,
+                                   source.galactic.b.value,
+                                   distance.to(u.pc).value,
+                                   2,
+                                   self.datadir)
+
+            return results*u.pc/u.cm**3,None
+        else:
+            dm=np.zeros_like(source.ra.value)
+            it = np.nditer(source.ra, flags=['multi_index'])
+            while not it.finished:
+                results=ymw16.dmdtau_c(source[it.multi_index].galactic.l.value,
+                                       source[it.multi_index].galactic.b.value,
+                                       distance.to(u.pc).value,
+                                       2,
+                                       self.datadir)
+                    
+                dm[it.multi_index]=results
+                it.iternext()
+                
+            return dm*u.pc/u.cm**3,None
             
     ##################################################
     def distance(self, source, DM, smweight='uniform'):
-        """
-        d,SM=m.distance(source, DM, smweight='uniform')
+        if self.dmmodel == 'ne2001':
+            return self.distance_NE2001(source, DM, smweight=smweight)
+        elif self.dmmodel == 'ymw16':
+            return self.distance_YMW16(source, DM)
 
-        returns distance in kpc and scattering measure for the given model
+
+    ##################################################
+    def distance_NE2001(self, source, DM, smweight='uniform'):
+        """
+        d,SM=m.distance_NE2001(source, DM, smweight='uniform')
+
+        returns distance in kpc and scattering measure for NE2001
         given a source, either a SkyCoord object or a parfile
         and a DM
 
@@ -263,6 +344,53 @@ class SkyModel:
                     SM[it.multi_index]=results[6]
                 it.iternext()
             return distance*u.kpc,SM*u.kpc/u.m**(20./3)
+    ##################################################
+    def distance_YMW16(self, source, DM):
+        """
+        d=m.distance_YMW16(source, DM)
+
+        returns distance in kpc for YMW16
+        given a source, either a SkyCoord object or a parfile
+        and a DM
+
+        if no units supplied standard DM units assumed for DM
+        """
+
+        if not isinstance(DM, astropy.units.quantity.Quantity):
+            # assume DM unit
+            DM*=u.pc/u.cm**3
+        if DM <= 0:
+            raise ValueError('DM must be > 0')
+        if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
+            if isinstance(source,str):
+                # assume .par file
+                source=parfile2SkyCoord(source)
+            else:
+                raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
+        source=source.icrs
+
+        if len(source.ra.shape)==0:
+            
+            results=ymw16.dmdtau_c(source.galactic.l.value,
+                                   source.galactic.b.value,                                   
+                                   DM.to(u.pc/u.cm**3).value,
+                                   1,
+                                   self.datadir)
+            distance=results*u.pc
+            return distance,None
+        else:
+            distance=np.zeros_like(source.ra.value)
+            it = np.nditer(source.ra, flags=['multi_index'])
+            dm=DM.to(u.pc/u.cm**3).value
+            while not it.finished:
+                results=ymw16.dmdtau_c(source[it.multi_index].galactic.l.value,
+                                       source[it.multi_index].galactic.b.value,                                   
+                                       dm,
+                                       1,
+                                       self.datadir)
+                distance[it.multi_index]=results
+                it.iternext()
+            return distance*u.pc,None
 
 
 

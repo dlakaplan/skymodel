@@ -1,5 +1,4 @@
 from __future__ import print_function
-#import sys;sys.path.append("./lib/python2.7/site-packages/")
 import numpy as np
 
 from astropy.coordinates import SkyCoord
@@ -35,6 +34,14 @@ except TypeError:
     print('Error converting to Galactic coords: probably astropy/numpy bug')
 
 
+d=skymodel.SkyModel(dmmodel='YMW16')
+print(d.distance(source, 10)[0])
+print(d.DM(source, 659*u.pc)[0])
+print(d.Tsky(source))
+
+print(d.distance('0038-2501.par', 10)[0])
+print(d.DM('0038-2501.par', 449*u.pc)[0])
+print(d.Tsky('0038-2501.par'))
 
 
 print(skymodel.Tsky(source))
