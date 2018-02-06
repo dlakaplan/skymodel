@@ -16,7 +16,7 @@ def main():
 
     
     usage="Usage: %prog [options] DM\n"
-    usage+='\tTranslates a distance into a DM\n'
+    usage+='\tTranslates a distance into a DM using NE2001\n'
     
     parser = OptionParser(usage=usage)
     parser.add_option('-p','--par',dest="parfile",default=None,

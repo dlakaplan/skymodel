@@ -16,7 +16,7 @@ def main():
 
     
     usage="Usage: %prog [options] DM\n"
-    usage+='\tTranslates a DM into a distance using NE2001\n'
+    usage+='\tTranslates a distance into a DM using YMW16\n'
     
     parser = OptionParser(usage=usage)
     parser.add_option('-p','--par',dest="parfile",default=None,
@@ -29,6 +29,8 @@ def main():
                       help="Galactic longitude")
     parser.add_option('-b','--b','--galb',dest='b',default=None,
                       help="Galactic latitude")
+    parser.add_option('-u','--unit',default='kpc',
+                      help='Units for distance [default=%default]')
 
     (options, args) = parser.parse_args()
 
@@ -60,15 +62,16 @@ def main():
     elif options.parfile is not None:
         source=skymodel.parfile2SkyCoord(options.parfile)
         
-    m=skymodel.SkyModel(dmmodel='NE2001')
-    for dm in map(float,args):
+    m=skymodel.SkyModel(dmmodel='YMW16')
+    for distance in args:
+        d=eval(distance + '*u.' + options.unit)
         s='For source (RA,Dec)=%s' % (source.to_string('hmsdms'))
         if options.parfile is not None:
             s+=' [%s]' % options.parfile
         print(s)
         print('(l,b)=%s' % source.galactic.to_string('decimal'))
-        print('and DM=%.3f pc/cm**3' % dm)
-        print(m.distance(source, dm)[0])
+        print('and d=%s' % d)
+        print(m.DM(source, d)[0])
         
 
  

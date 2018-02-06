@@ -16,7 +16,7 @@ def main():
 
     
     usage="Usage: %prog [options] DM\n"
-    usage+='\tTranslates a DM into a distance using NE2001\n'
+    usage+='\tTranslates a DM into a distance using YMW16\n'
     
     parser = OptionParser(usage=usage)
     parser.add_option('-p','--par',dest="parfile",default=None,
@@ -60,7 +60,7 @@ def main():
     elif options.parfile is not None:
         source=skymodel.parfile2SkyCoord(options.parfile)
         
-    m=skymodel.SkyModel(dmmodel='NE2001')
+    m=skymodel.SkyModel(dmmodel='YMW16')
     for dm in map(float,args):
         s='For source (RA,Dec)=%s' % (source.to_string('hmsdms'))
         if options.parfile is not None:
