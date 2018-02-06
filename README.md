@@ -43,7 +43,7 @@ print d.distance(source, 10)
  * The Tsky model can be 'GSM2008' or 'GSM2016'
  * parfiles are parsed by PINT
  * [NE2001](http://www.astro.cornell.edu/~cordes/NE2001/) and [YMW16](http://119.78.162.254/dmodel/index.php)  supported for DM models
- * Source positions can be vectorized
+ * Source positions can be vectorized.  If they are a vector d/DM can also be a vector (same shape) or scalar.
  * There are convenience functions as well:
  ```python
  print skymodel.Tsky(source)
