@@ -79,7 +79,7 @@ and freq=350.0 MHz
 ```
 
 To Do:
- * vectorize distance/DM too?
+ * ~~vectorize distance/DM too?~~
  * ~~add YMW16 model~~
  * access scattering quantities (now SM is also returned from NE2001, but not others)
 
