@@ -173,7 +173,7 @@ class SkyModel:
         if not isinstance(distance, astropy.units.quantity.Quantity):
             # assume kpc
             distance=distance*u.kpc            
-        if distance.value.any() <= 0:
+        if (len(distance.shape)>0 and distance.value.any() <= 0) or distance.value < 0:
             raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
@@ -257,7 +257,7 @@ class SkyModel:
         if not isinstance(distance, astropy.units.quantity.Quantity):
             # assume kpc
             distance=distance*u.kpc            
-        if distance.value.any() <= 0:
+        if (len(distance.shape)>0 and distance.value.any() <= 0) or distance.value < 0:
             raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
@@ -346,7 +346,7 @@ class SkyModel:
         if not isinstance(DM, astropy.units.quantity.Quantity):
             # assume DM unit
             DM=DM*u.pc/u.cm**3
-        if DM.value.any() <= 0:
+        if (len(DM.shape)>0 and DM.value.any() <= 0) or DM.value < 0:
             raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
@@ -426,7 +426,7 @@ class SkyModel:
         if not isinstance(DM, astropy.units.quantity.Quantity):
             # assume DM unit
             DM=DM*u.pc/u.cm**3
-        if DM.value.any() <= 0:
+        if (len(DM.shape)>0 and DM.value.any() <= 0) or DM.value < 0:
             raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
