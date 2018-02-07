@@ -119,9 +119,10 @@ class SkyModel:
             else:
                 raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
 
+        source=source.galactic
         T=healpy.pixelfunc.get_interp_val(self.map,
-                                          source.galactic.l.value,
-                                          source.galactic.b.value,
+                                          source.l.value,
+                                          source.b.value,
                                           lonlat=True)
         return T*u.K
     ##############################
@@ -173,7 +174,7 @@ class SkyModel:
         if not isinstance(distance, astropy.units.quantity.Quantity):
             # assume kpc
             distance=distance*u.kpc            
-        if (len(distance.shape)>0 and distance.value.any() <= 0) or distance.value < 0:
+        if (len(distance.shape)>0 and distance.value.any() <= 0) or (len(distance.shape)==0 and distance.value < 0):
             raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
@@ -182,13 +183,13 @@ class SkyModel:
                 source=parfile2SkyCoord(source)
             else:
                 raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
-        source=source.icrs
+        source=source.galactic
 
 
-        if len(source.ra.shape)==0:
+        if len(source.l.shape)==0:
             results=ne2001.dmdsm(self.datadir,
-                                 np.radians(source.galactic.l.value),
-                                 np.radians(source.galactic.b.value),
+                                 np.radians(source.l.value),
+                                 np.radians(source.b.value),
                                  -1,
                                  0,
                                  distance.to(u.kpc).value)
@@ -207,9 +208,9 @@ class SkyModel:
 
             return sign*results[0]*u.pc/u.cm**3,SM
         else:
-            dm=np.zeros_like(source.ra.value)
-            SM=np.zeros_like(source.ra.value)
-            it = np.nditer(source.ra, flags=['multi_index'])
+            dm=np.zeros_like(source.l.value)
+            SM=np.zeros_like(source.l.value)
+            it = np.nditer(source.l, flags=['multi_index'])
             if len(dm.shape)==0:
                 dm_touse=dm
             else:
@@ -220,8 +221,8 @@ class SkyModel:
                 else:
                     d_touse=d[it.multi_index]
                 results=ne2001.dmdsm(self.datadir,
-                                     np.radians(source[it.multi_index].galactic.l.value),
-                                     np.radians(source[it.multi_index].galactic.b.value),
+                                     np.radians(source[it.multi_index].l.value),
+                                     np.radians(source[it.multi_index].b.value),
                                      -1,
                                      0,
                                      d_touse)
@@ -257,7 +258,7 @@ class SkyModel:
         if not isinstance(distance, astropy.units.quantity.Quantity):
             # assume kpc
             distance=distance*u.kpc            
-        if (len(distance.shape)>0 and distance.value.any() <= 0) or distance.value < 0:
+        if (len(distance.shape)>0 and distance.value.any() <= 0) or (len(distance.shape)==0 and distance.value < 0):
             raise ValueError('distance must be > 0')
 
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
@@ -266,21 +267,21 @@ class SkyModel:
                 source=parfile2SkyCoord(source)
             else:
                 raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
-        source=source.icrs
+        source=source.galactic
 
 
-        if len(source.ra.shape)==0:
-            results=ymw16.dmdtau_c(source.galactic.l.value,
-                                   source.galactic.b.value,
+        if len(source.l.shape)==0:
+            results=ymw16.dmdtau_c(source.l.value,
+                                   source.b.value,
                                    distance.to(u.pc).value,
                                    2,
                                    self.datadir)
 
             return results*u.pc/u.cm**3,None
         else:
-            dm=np.zeros_like(source.ra.value)
-            it = np.nditer(source.ra, flags=['multi_index'])
-            if not (len(distance.shape)==0 or distance.shape==source.ra.shape):
+            dm=np.zeros_like(source.l.value)
+            it = np.nditer(source.l, flags=['multi_index'])
+            if not (len(distance.shape)==0 or distance.shape==source.l.shape):
                 raise IndexError('Shape of distance must be scalar or the same as shape of coordinates')
             d=distance.to(u.pc).value
             while not it.finished:
@@ -288,8 +289,8 @@ class SkyModel:
                     d_touse=d
                 else:
                     d_touse=d[it.multi_index]
-                results=ymw16.dmdtau_c(source[it.multi_index].galactic.l.value,
-                                       source[it.multi_index].galactic.b.value,
+                results=ymw16.dmdtau_c(source[it.multi_index].l.value,
+                                       source[it.multi_index].b.value,
                                        d_touse,
                                        2,
                                        self.datadir)
@@ -346,7 +347,7 @@ class SkyModel:
         if not isinstance(DM, astropy.units.quantity.Quantity):
             # assume DM unit
             DM=DM*u.pc/u.cm**3
-        if (len(DM.shape)>0 and DM.value.any() <= 0) or DM.value < 0:
+        if (len(DM.shape)>0 and DM.value.any() <= 0) or (len(DM.shape)==0 and DM.value < 0):
             raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
@@ -354,13 +355,13 @@ class SkyModel:
                 source=parfile2SkyCoord(source)
             else:
                 raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
-        source=source.icrs
+        source=source.galactic
 
-        if len(source.ra.shape)==0:
+        if len(source.l.shape)==0:
             
             results=ne2001.dmdsm(self.datadir,
-                                 np.radians(source.galactic.l.value),
-                                 np.radians(source.galactic.b.value),
+                                 np.radians(source.l.value),
+                                 np.radians(source.b.value),
                                  1,
                                  DM.to(u.pc/u.cm**3).value,
                                  0)
@@ -379,11 +380,11 @@ class SkyModel:
                 SM=results[6]*u.kpc/u.m**(20./3)
             return distance,SM
         else:
-            distance=np.zeros_like(source.ra.value)
-            SM=np.zeros_like(source.ra.value)
-            it = np.nditer(source.ra, flags=['multi_index'])
+            distance=np.zeros_like(source.l.value)
+            SM=np.zeros_like(source.l.value)
+            it = np.nditer(source.l, flags=['multi_index'])
             dm=DM.to(u.pc/u.cm**3).value
-            if not (len(dm.shape)==0 or dm.shape==source.ra.shape):
+            if not (len(dm.shape)==0 or dm.shape==source.l.shape):
                 raise IndexError('Shape of DM must be scalar or the same as shape of coordinates')
             while not it.finished:
                 if len(dm.shape)==0:
@@ -391,8 +392,8 @@ class SkyModel:
                 else:
                     dm_touse=dm[it.multi_index]
                 results=ne2001.dmdsm(self.datadir,
-                                     np.radians(source[it.multi_index].galactic.l.value),
-                                     np.radians(source[it.multi_index].galactic.b.value),
+                                     np.radians(source[it.multi_index].l.value),
+                                     np.radians(source[it.multi_index].b.value),
                                      1,
                                      dm_touse,
                                      0)
@@ -426,7 +427,7 @@ class SkyModel:
         if not isinstance(DM, astropy.units.quantity.Quantity):
             # assume DM unit
             DM=DM*u.pc/u.cm**3
-        if (len(DM.shape)>0 and DM.value.any() <= 0) or DM.value < 0:
+        if (len(DM.shape)>0 and DM.value.any() <= 0) or (len(DM.shape)==0 and DM.value < 0):
             raise ValueError('DM must be > 0')
         if not isinstance(source, astropy.coordinates.sky_coordinate.SkyCoord):
             if isinstance(source,str):
@@ -434,30 +435,30 @@ class SkyModel:
                 source=parfile2SkyCoord(source)
             else:
                 raise TypeError('Do not know how to interpret an object of type %s' % source.__class__)
-        source=source.icrs
+        source=source.galactic
 
-        if len(source.ra.shape)==0:
+        if len(source.l.shape)==0:
             
-            results=ymw16.dmdtau_c(source.galactic.l.value,
-                                   source.galactic.b.value,                                   
+            results=ymw16.dmdtau_c(source.l.value,
+                                   source.b.value,                                   
                                    DM.to(u.pc/u.cm**3).value,
                                    1,
                                    self.datadir)
             distance=results*u.pc
             return distance,None
         else:
-            distance=np.zeros_like(source.ra.value)
-            it = np.nditer(source.ra, flags=['multi_index'])
+            distance=np.zeros_like(source.l.value)
+            it = np.nditer(source.l, flags=['multi_index'])
             dm=DM.to(u.pc/u.cm**3).value
-            if not (len(dm.shape)==0 or dm.shape==source.ra.shape):
+            if not (len(dm.shape)==0 or dm.shape==source.l.shape):
                 raise IndexError('Shape of DM must be scalar or the same as shape of coordinates')
             while not it.finished:
                 if len(dm.shape)==0:
                     dm_touse=dm
                 else:
                     dm_touse=dm[it.multi_index]
-                results=ymw16.dmdtau_c(source[it.multi_index].galactic.l.value,
-                                       source[it.multi_index].galactic.b.value,                                   
+                results=ymw16.dmdtau_c(source[it.multi_index].l.value,
+                                       source[it.multi_index].b.value,                                   
                                        dm_touse,
                                        1,
                                        self.datadir)
