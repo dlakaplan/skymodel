@@ -216,8 +216,8 @@ class SkyModel:
             else:
                 dm_touse=dm[it.multi_index]
             while not it.finished:
-                if len(d.shape)==0:
-                    d_touse=d
+                if len(distance.shape)==0:
+                    d_touse=distance
                 else:
                     d_touse=d[it.multi_index]
                 results=ne2001.dmdsm(self.datadir,
