@@ -225,7 +225,7 @@ class SkyModel:
                                      np.radians(source[it.multi_index].b.value),
                                      -1,
                                      0,
-                                     d_touse)
+                                     d_touse.to(u.kpc).value)
                 sign=1
                 if results[2]=='>':
                     #raise ValueError('DM returned a lower limit')
