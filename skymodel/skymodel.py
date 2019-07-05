@@ -286,12 +286,12 @@ class SkyModel:
             d=distance.to(u.pc).value
             while not it.finished:
                 if len(d.shape)==0:
-                    d_touse=d
+                    d_touse=distance
                 else:
-                    d_touse=d[it.multi_index]
+                    d_touse=distance[it.multi_index]
                 results=ymw16.dmdtau_c(source[it.multi_index].l.value,
                                        source[it.multi_index].b.value,
-                                       d_touse,
+                                       d_touse.to(u.pc).value,
                                        2,
                                        self.datadir)
                     
