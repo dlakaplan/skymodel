@@ -219,7 +219,7 @@ class SkyModel:
                 if len(distance.shape)==0:
                     d_touse=distance
                 else:
-                    d_touse=d[it.multi_index]
+                    d_touse=distance[it.multi_index]
                 results=ne2001.dmdsm(self.datadir,
                                      np.radians(source[it.multi_index].l.value),
                                      np.radians(source[it.multi_index].b.value),
